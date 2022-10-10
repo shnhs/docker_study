@@ -1,0 +1,46 @@
+*** 빌드 ***
+docker build [dockerFile의 위치]   => 새 커스텀 이미지를 빌드. 이미지ID 생성
+
+*** 컨테이너 실행 ***
+
+docker run  => 이미지를 기반으로 새 컨테이너 생성
+
+docker run -it [image]
+
+docker start [id or name]   => 기존 컨테이너를 시작
+
+docker run -p [외부port]:[docker 내부 포트] [id]  => -p 는 publish의 의미 
+    ex) docker run -p 8000:80 [iddddddd]
+
+docker run -p port:port -d [id] => -d 옵션으로 Detached 모드로 컨테이너 실행
+
+docker run --rm     => 컨테이너 중지 시 자동으로 제거
+
+*** 이미지와 컨테이너 관리 ***
+docker ps 	 	실행중인 컨테이너 리스트업
+docker ps -a    중지된 컨테이너, 과거의 컨테이너까지 리스트업
+
+docker images   현재 가지고 있는 모든 이미지 리스트업
+
+docker rm  [image]     컨테이너 삭제; 실행중인 컨테이너는 삭제 불가
+docker rmi  [image]    이미지 삭제. 해당 이미지로 만들어진 컨테이너가 있다면 삭제 불가
+
+docker image prune      사용되지 않는 모든 이미지 삭제
+docker container prune  중지된 모든 컨테이너 삭제
+                
+docker image inspect [imageId]      => 이미지의 대한 정보 출력
+
+docker run ~~ --name [name] ~~      컨테이너 이름 지정
+docker build -t [name:tag] ~        이미지 이름 지정
+
+*** 컨테이너 관련 ***
+docker logs [id]
+docker logs -f [id]     => -f 옵션으로 지속 로그 관찰
+
+docker cp [source] [target]     => 컨테이너로 파일 복사 / 컨테이너에서 파일 추출
+                                컨테이너 내부를 지정할 때 포맷 : [container_name:/path]
+                                
+docker ~~ -v [명명 볼륨]:[볼륨과 연결할 도커 내부 디렉토리]       명명 볼륨을 생성하고 컨테이너와 연결
+docker rm [volume_name] / docker volume prune       사용하지 않는 익명 볼륨 삭제
+docker volume create [name]     도커 볼륨 직접 생성
+docker volume inspect [volume]  해당 볼륨에 대한 정보 보기
