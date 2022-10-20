@@ -1,0 +1,113 @@
+==================================================================
+79. 모듈 소개
+
+다중 컨테이너 애플리케이션 구축
+
+여러개의 서비스를 하나의 앱에 구축하고
+그거를 도커 컨테이너 화
+
+==================================================================
+80. Target 앱 설정
+
+주요 3가지의 블록
+
+1. 데이터 베이스 - 몽고DB
+2. B/E - nodeJS REST API
+3. F/E- React SPA
+
+이런 구성은 웹 애플리케이션을 구성하는 일반적 방법
+
+몽고DB 데이터를 유지 시키고
+ID/PW 세팅할거임
+
+백엔드에서 로그 데이터 유지
+
+호스트 머신의 최신 코드를 바로 호스트 머신에 반영할 거
+
+==================================================================
+81. 몽고DB 서비스 도커화
+
+공식 Mongo 이미지 사용
+
+기본 실행
+docker run --name mongodb --rm -d mongo
+
+포트 게시
+기본이미지는 27017 포트 노출
+docker run --name mongodb --rm -d -p 27017:27017 mongo
+
+==================================================================
+82. Node 앱 도커화
+
+Dockerfile 만들기 + 빌드
+
+docker run --name goals-backend --rm goals-node
+
+그냥 띄우면 몽고DB 커넥션 에러
+컨테이너가 아닌 localhost 몽고DB로 접속을 시도하기 때문
+
+포트 게시도 추가
+docker run --name goals-backend --rm -d -p 80:80 goals-node
+
+==================================================================
+83. React SPA 도커화
+
+Dockerfile 만들기 + 빌드
+
+docker run --name goals-frontend --rm -d -p 3000:3000 goals-react
+
+실행하면 개발 서버가 가동되고 바로 멈춰버림
+-it 옵션으로 인터렉티브 모드로 해줘야함
+
+docker run --name goals-frontend --rm -d -p 3000:3000 -it goals-react
+
+==================================================================
+84. 도커 네트워크 추가
+
+네트워크 추가하면 따로 포트 게시 안해도 서로 통신 가능
+
+docker run --name mongodb --rm -d --network goals-net mongo
+
+docker run --name goals-backend --rm -d --network goals-net goals-node
+
+docker run --name goals-frontend --rm -d --network goals-net -p 3000:3000 -it goals-react
+
+react는 도커 컨테이너에서 실행하지 않는 코드도 있기에
+localhost를 사용해야함, 왜냐면 로컬 호스트는 도커 IP 변환 모름
+그리고 백엔드 파트를 포트 게시가 필요함
+docker run --name goals-backend --rm -d --network goals-net -p 80:80 goals-node
+
+==================================================================
+85. 볼륨으로 mongodb 지속성 추가
+
+그냥 아무것도 지저하지 않으면 몽고DB 컨테이너를 제거하면
+데이터도 같이 날아감
+데이터를 하드 어딘가에 저장해놔야함
+
+-v 옵션으로 볼륨 지정 필요
+docker run --name mongodb -v data:/data/db --rm -d --network goals-net mongo
+=> data라고 명명된 볼륨 사용
+
+MONGO_INITDB_ROOT_USERNAME, MONGO_INITDB_ROOT_PASSWORD 환경변수 사용
+docker run --name mongodb -v data:/data/db --rm -d --network goals-net -e MONGO_INITDB_ROOT_USERNAME=max -e MONGO_INITDB_ROOT_PASSWORD=sex mongo
+
+==================================================================
+86. NodeJS 컨테이너 볼륨, 바인딩 마운트, 폴리싱
+
+
+==================================================================
+87. 
+
+==================================================================
+88. 모듈 요약
+
+데이터 베이스, 백엔드, 프론트를 스탠드 얼론 컨테이너로 구성
+여러개 컨테이너를 하나로 구성하는 방식을 이해하자
+
+docker run 커맨드가 너무길다...
+컨테이너를 재생성 할 때 마다 docker run 해야함..
+심지어 각각 실행해야함
+
+지금까지 개발 관련한 셋업만 진행함
+
+==================================================================
