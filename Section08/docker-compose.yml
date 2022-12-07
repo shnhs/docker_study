@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  server:
+    image: 'nginx:stable-alpine' # nginx 를 사용
+    ports:
+      - '8000:80'
+    volumes:
+      - ./nginx/nginx.conf:/ete/nignx/nginx.conf:ro
+  
+  php:
+    build:
+      context: ./dockerfiles
+      dockerfile: php.dockerfile
+    volumes:
+      - ./src:/var/www/html:delegated
+    ports:
+      - '3000:9000'
+
+  # mysql:
+  # composer:
+  # artisan:
+  # npm:
